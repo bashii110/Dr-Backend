@@ -1,12 +1,5 @@
 <?php
-// ═══════════════════════════════════════════════════════════════
-// User.php
-// ═══════════════════════════════════════════════════════════════
 namespace App\Models;
-
-use App\Models\Doctor;
-use App\Models\UserDetails;
-use Appointment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,13 +7,19 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     protected $fillable = [
-        'name', 'email', 'password', 'type', 'phone', 'email_verified_at',
+        'name',
+        'type',
+        'email',
+        'password',
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     protected function casts(): array
     {
@@ -32,16 +31,16 @@ class User extends Authenticatable
 
     public function doctor()
     {
-        return $this->hasOne(Doctor::class, 'doc_id');
+        return $this->hasOne(Doctor::class, 'doc_id', 'id');
     }
 
     public function userDetails()
     {
-        return $this->hasOne(UserDetails::class, 'user_id');
+        return $this->hasOne(UserDetails::class, 'user_id', 'id');
     }
 
     public function appointments()
     {
-        return $this->hasMany(Appointment::class, 'patient_id');
+        return $this->hasMany(Appointment::class, 'patient_id', 'id');
     }
 }
