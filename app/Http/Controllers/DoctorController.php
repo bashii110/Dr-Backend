@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Doctor;
-use App\Models\User;
+use App\Models\Review;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Schema;
 use Exception;
@@ -335,53 +335,55 @@ class DoctorController extends Controller
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private function formatDoctor(Doctor $doctor, bool $full = false): array
-    {
-        $columns = Schema::getColumnListing('doctors');
+{
+    $columns = Schema::getColumnListing('doctors');
 
-        $data = [
-            'id'     => $doctor->id,
-            'doc_id' => $doctor->doc_id,
+    // Always recalculate fresh from reviews table
+    $avgRating   = (float) round(Review::where('doctor_id', $doctor->id)->avg('rating') ?? 0, 1);
+    $ratingCount = (int)   Review::where('doctor_id', $doctor->id)->count();
 
-            // Flutter DoctorModel.fromJson reads j['user']?['name'] so we MUST include a user object
-            'user' => [
-                'id'                 => $doctor->user->id ?? null,
-                'name'               => $doctor->user->name ?? '',
-                'email'              => $doctor->user->email ?? '',
-                'phone'              => $doctor->user->phone ?? null,
-                'profile_photo_path' => $doctor->user->profile_photo_path ?? null,
-            ],
+    $data = [
+        'id'     => $doctor->id,
+        'doc_id' => $doctor->doc_id,
 
-            // Flat aliases kept for any code that reads them directly
-            'name'             => $doctor->user->name ?? '',
-            'email'            => $doctor->user->email ?? '',
-            'phone'            => $doctor->user->phone ?? null,
-            'photo'            => $doctor->user->profile_photo_path
-                                    ? asset('storage/' . $doctor->user->profile_photo_path)
-                                    : null,
-            'category'         => $doctor->category,
-            'experience'       => (int)   ($doctor->experience ?? 0),
-            'patients'         => (int)   ($doctor->patients   ?? 0),
-            'rating'           => (float) ($doctor->rating     ?? 0),
-            'rating_count'     => (int)   ($doctor->rating_count ?? 0),
-            'fee'              => (float) ($doctor->fee ?? 0),
-            'consultation_fee' => (float) ($doctor->fee ?? 0),
-            'hospital'         => $doctor->hospital  ?? null,
-            'status'           => $doctor->status    ?? 'pending',
-            'is_available'     => $doctor->is_available ?? true,
-            'available_from'   => in_array('available_from', $columns) ? ($doctor->available_from ?? null) : null,
-            'available_to'     => in_array('available_to',   $columns) ? ($doctor->available_to   ?? null) : null,
-        ];
+        'user' => [
+            'id'                 => $doctor->user->id ?? null,
+            'name'               => $doctor->user->name ?? '',
+            'email'              => $doctor->user->email ?? '',
+            'phone'              => $doctor->user->phone ?? null,
+            'profile_photo_path' => $doctor->user->profile_photo_path ?? null,
+        ],
 
-        if ($full) {
-            $data['bio_data']  = $doctor->bio_data;
-            $data['education'] = $doctor->education ?? null;
-            $data['address']   = $doctor->address   ?? null;
-            $data['languages'] = $doctor->languages ?? [];
-            $data['reviews']   = $doctor->reviews   ?? [];
-        }
+        'name'             => $doctor->user->name ?? '',
+        'email'            => $doctor->user->email ?? '',
+        'phone'            => $doctor->user->phone ?? null,
+        'photo'            => $doctor->user->profile_photo_path
+                                ? asset('storage/' . $doctor->user->profile_photo_path)
+                                : null,
+        'category'         => $doctor->category,
+        'experience'       => (int)   ($doctor->experience ?? 0),
+        'patients'         => (int)   ($doctor->patients   ?? 0),
+        'rating'           => $avgRating,    // ✅ fresh from reviews table
+        'rating_count'     => $ratingCount,  // ✅ fresh from reviews table
+        'fee'              => (float) ($doctor->fee ?? 0),
+        'consultation_fee' => (float) ($doctor->fee ?? 0),
+        'hospital'         => $doctor->hospital  ?? null,
+        'status'           => $doctor->status    ?? 'pending',
+        'is_available'     => $doctor->is_available ?? true,
+        'available_from'   => in_array('available_from', $columns) ? ($doctor->available_from ?? null) : null,
+        'available_to'     => in_array('available_to',   $columns) ? ($doctor->available_to   ?? null) : null,
+    ];
 
-        return $data;
+    if ($full) {
+        $data['bio_data']  = $doctor->bio_data;
+        $data['education'] = $doctor->education ?? null;
+        $data['address']   = $doctor->address   ?? null;
+        $data['languages'] = $doctor->languages ?? [];
+        $data['reviews']   = $doctor->reviews   ?? [];
     }
+
+    return $data;
+}
 
     private function formatAppointment($apt, Doctor $doctor): array
     {

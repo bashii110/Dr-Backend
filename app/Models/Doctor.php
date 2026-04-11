@@ -19,9 +19,10 @@ class Doctor extends Model
         'consultation_fee',
         'available_from',
         'available_to',
+        'rating',          // ✅ added
+        'rating_count',    // ✅ added
     ];
 
-    // belongs to users table via doc_id
     public function user()
     {
         return $this->belongsTo(User::class, 'doc_id', 'id');

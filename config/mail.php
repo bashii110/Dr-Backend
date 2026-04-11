@@ -37,6 +37,12 @@ return [
 
     'mailers' => [
 
+        'mailtrap' => [
+        'transport' => 'mailtrap',
+        'token' => env('d3f5237eb3f2d5a0c983bfce1a1a979d'),
+         ],
+
+
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
@@ -72,7 +78,7 @@ return [
 
         'log' => [
             'transport' => 'log',
-            'channel' => env('MAIL_LOG_CHANNEL'),
+            'log_channel' => env('MAIL_LOG_CHANNEL', 'stack'),
         ],
 
         'array' => [
