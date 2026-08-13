@@ -14,6 +14,7 @@ class User extends Authenticatable
         'type',
         'email',
         'password',
+        'email_verified_at',
     ];
 
     protected $hidden = [
@@ -22,12 +23,12 @@ class User extends Authenticatable
     ];
 
     protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-        ];
-    }
+{
+    return [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+}
 
     public function doctor()
     {

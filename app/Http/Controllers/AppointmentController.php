@@ -60,7 +60,7 @@ class AppointmentController extends Controller
             'status'           => 'pending',
             'fee'              => $doctor->consultation_fee ?? 0,
         ]);
-
+        
         $doctor->increment('patients');
 
         try {

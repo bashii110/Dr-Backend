@@ -366,7 +366,7 @@ class DoctorController extends Controller
         'rating'           => $avgRating,    // ✅ fresh from reviews table
         'rating_count'     => $ratingCount,  // ✅ fresh from reviews table
         'fee'              => (float) ($doctor->fee ?? 0),
-        'consultation_fee' => (float) ($doctor->fee ?? 0),
+        'fee'              => (float) ($doctor->fee ?? 0),
         'hospital'         => $doctor->hospital  ?? null,
         'status'           => $doctor->status    ?? 'pending',
         'is_available'     => $doctor->is_available ?? true,

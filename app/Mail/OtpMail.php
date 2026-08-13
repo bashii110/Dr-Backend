@@ -12,20 +12,32 @@ class OtpMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $user;
     public string $otp;
+    public string $type;
 
-    public function __construct(string $otp)
+    public function __construct($user, string $otp, string $type = 'verification')
     {
+        $this->user = $user;
         $this->otp = $otp;
+        $this->type = $type;
     }
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Your Verification Code');
+        $subject = $this->type === 'password_reset'
+            ? 'Reset Your Doctor App Password'
+            : 'Verify Your Doctor App Account';
+
+        return new Envelope(
+            subject: $subject
+        );
     }
 
     public function content(): Content
     {
-        return new Content(view: 'otp');
+        return new Content(
+            view: 'otp',
+        );
     }
 }

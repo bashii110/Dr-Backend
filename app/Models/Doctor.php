@@ -16,11 +16,11 @@ class Doctor extends Model
         'experience',
         'bio_data',
         'status',
-        'consultation_fee',
+        'fee',
         'available_from',
         'available_to',
-        'rating',          // ✅ added
-        'rating_count',    // ✅ added
+        'rating',          
+        'rating_count',    
     ];
 
     public function user()
