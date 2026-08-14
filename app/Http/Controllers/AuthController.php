@@ -229,30 +229,41 @@ class AuthController extends Controller
     /**
      * LOGIN
      */
-    public function login(Request $request)
+   public function login(Request $request)
 {
     $validator = Validator::make($request->all(), [
         'email'    => 'required|email',
-        'password' => 'required|string',
+        'password' => 'required',
     ]);
 
     if ($validator->fails()) {
         return response()->json([
-            'status'  => 422,
+            'status' => 422,
             'message' => 'Validation failed.',
-            'errors'  => $validator->errors(),
+            'errors' => $validator->errors(),
         ], 422);
     }
 
-    $email = strtolower(trim($request->email));
-
-    $user = User::where('email', $email)->first();
+    $user = User::where(
+        'email',
+        strtolower(trim($request->email))
+    )->first();
 
     if (!$user || !Hash::check($request->password, $user->password)) {
         return response()->json([
-            'status'  => 401,
+            'status' => 401,
             'message' => 'Invalid email or password.',
         ], 401);
+    }
+
+    // Check Laravel's email_verified_at
+    if (is_null($user->email_verified_at)) {
+        return response()->json([
+            'status' => 403,
+            'message' => 'Please verify your email before logging in.',
+            'requires_verification' => true,
+            'email' => $user->email,
+        ], 403);
     }
 
     // Remove old tokens
@@ -261,14 +272,11 @@ class AuthController extends Controller
     // Create new token
     $token = $user->createToken('auth_token')->plainTextToken;
 
-    // Load profile relationships
-    $user->load(['doctor', 'userDetails']);
-
     return response()->json([
-        'status'  => 200,
+        'status' => 200,
         'message' => 'Login successful!',
-        'token'   => $token,
-        'user'    => $this->formatUser($user),
+        'token' => $token,
+        'user' => $this->formatUser($user),
     ], 200);
 }
 
