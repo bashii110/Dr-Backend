@@ -2,6 +2,14 @@
 
 REST API backend for the **Doctor Appointment App** (Flutter client). Built with **Laravel 12** and PHP 8.2+. It handles authentication for patients and doctors, and is the foundation for doctor profiles, appointment booking, reviews, and email OTP verification.
 
+## Live Demo App
+
+<p align="center">
+  <a href="https://github.com/bashii110/Dr-App/releases/download/v1.0.1/app-release.apk">
+    <img src="https://img.shields.io/badge/Download%20APK-v1.0.1-1A73E8?style=for-the-badge&logo=android&logoColor=white" alt="Download APK" />
+  </a>
+</p>
+
 ## Tech Stack
 
 - PHP ^8.2, Laravel ^12
